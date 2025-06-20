@@ -1,57 +1,30 @@
-import React from 'react'
-import Table from './components/Table'
+import Login from "./pages/Login.jsx"
+import Register from "./pages/Register.jsx"
+import Booking from "./pages/Booking.jsx"
+import Home from "./pages/Home.jsx"
+import Prescriptions from "./pages/Prescriptions.jsx"
+import Navbar from './components/Navbar.jsx'
+import { Navigate, Route, Routes } from "react-router-dom";
+import { useAuth } from "./context/AuthContext.jsx"
 
 export default function App() {
-
-  const appointments = [
-    {
-      id: 1,
-      doctor: "Dr. Rohit",
-      date: "2025-06-16",
-      time: "10:56:10"
-    },
-    {
-      id: 2,
-      doctor: "Dr. Moon",
-      date: "2025-06-19",
-      time: "10:56:10"
-    },
-    {
-      id: 3,
-      doctor: "Dr. Jun",
-      date: "2025-06-19",
-      time: "11:58:10"
-    }
-  ]
-
-  const upcommingAppointments = appointments.filter((app) => new Date(app.date) > Date.now())
-  const pastAppointments = appointments.filter((app) => new Date(app.date) < Date.now())
+  const { isAuthenticated } = useAuth();
   return (
-    <div className='flex flex-col gap-8'>
-      <div>
-        <h1 className='font-bold text-4xl'>Upcomming Appointments</h1>
-        <div className='flex gap-4 p-6'>
-          {
-            upcommingAppointments.map((app) => {
-              return (
-                <Table key={app.id} id={app.id} doctor={app.doctor} date={app.date} time={app.time} />
-              )
-            })
-          }
-        </div>
-      </div>
-      <div>
-        <h1 className='font-bold text-4xl'>Past Appointments</h1>
-        <div className='flex gap-4 p-6'>
-          {
-            pastAppointments.map((app) => {
-              return (
-                <Table key={app.id} id={app.id} doctor={app.doctor} date={app.date} time={app.time} />
-              )
-            })
-          }
-        </div>
-      </div>
-    </div>
+    <>
+      <header>
+        <Navbar />
+      </header>
+      <main className='h-screen px-8 pt-16 pb-4'>
+        <Routes>
+          {/* public routes */}
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+          {/* protected routes */}
+          <Route path='/' element={isAuthenticated ? <Home /> : <Navigate to={"/login"} />} />
+          <Route path='/booking' element={isAuthenticated ? <Booking /> : <Navigate to={"/login"} />} />
+          <Route path='/prescriptions' element={isAuthenticated ? <Prescriptions /> : <Navigate to={"/login"} />} />
+        </Routes>
+      </main>
+    </>
   )
 }
